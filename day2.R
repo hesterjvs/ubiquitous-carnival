@@ -28,3 +28,7 @@ SumStats <- go %>%
   summarise(meanOz = mean(Ozone),
             varOz = var(Ozone))
 SumStats
+
+#t-test
+t.test(Ozone ~ Garden.location, data = go)
+
