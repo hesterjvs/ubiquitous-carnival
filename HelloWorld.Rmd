@@ -161,3 +161,5 @@ plot(x ~ y)
 
 #![Alt text](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWprdGE3dXY2amt0dWVxYTFmZDFzZWVpMm0wdTg4aWNoaGlvZWhiMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OMeBbkqCFQoFXCYYsp/giphy.gif)
 
+Here have a puppy
+!(https://pbs.twimg.com/profile_banners/65414325/1705674901/1500x500)
