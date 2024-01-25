@@ -21,3 +21,10 @@ p1 <- ggplot(go, aes(x= Ozone)) +
   expand_limits(x = 40) +
   scale_x_continuous(breaks = c(40,60,80))
 p1
+
+#summary statistics
+SumStats <- go %>%
+  group_by(Garden.location) %>%
+  summarise(meanOz = mean(Ozone),
+            varOz = var(Ozone))
+SumStats
