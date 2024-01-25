@@ -1,5 +1,5 @@
 ---
-title: "Hello world!"
+title: "Day 2 NHM R course"
 output: html_document
 date: "2024-01-25"
 ---
@@ -7,12 +7,132 @@ date: "2024-01-25"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Adding a picture for the excercise
+#![test pic from QIIME output](pic.png)
 
-## R Markdown
+## Load packages
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+library(dplyr)   #data manipulation
+library(ggplot2) #plotting
+```
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Import data
+```{r}
+go <- read.csv("../day2/data/GardenOzone.csv")
+```
+
+## Look at the data
+```{r}
+head(go)
+glimpse(go)
+str(go)
+```
+
+## Plot data
+```{r}
+p1 <- ggplot(go, aes(x= Ozone)) +
+  geom_histogram(bins = 9) +
+  facet_wrap(~Garden.location, ncol = 1) +
+  expand_limits(x = 40) +
+  scale_x_continuous(breaks = c(40,60,80))
+p1
+```
+
+## Summary statistics
+```{r}
+SumStats <- go %>%
+  group_by(Garden.location) %>%
+  summarise(meanOz = mean(Ozone),
+            varOz = var(Ozone))
+SumStats
+```
+
+## T-test
+```{r}
+t.test(Ozone ~ Garden.location, data = go)
+```
+
+## Plant growth rate data
+### Linear regression
+
+```{r}
+plant <- read.csv("../day2/data/plant.growth.rate.csv")
+head(plant)
+```
+
+```{r}
+p2 <- ggplot(plant, aes(x = soil.moisture.content, y = plant.growth.rate))+
+      geom_point(colour = "cornflowerblue") +
+      ylim(15,50)
+p2
+```
+
+```{r}
+model1 <- lm(plant.growth.rate ~ soil.moisture.content, data = plant)
+```
+
+```{r}
+library(ggfortify) #check assumptions of model
+autoplot(model1)
+```
+
+## Evaluate the plots:
+### Residuals vs Fitted
+Have we fitted the right model???
+We want a sky-at-night distribution with no pattern
+Often if there is a pattern, it is because you've missed an interaction term in the model
+
+### Scale-Location 
+Not a big deal! Only important for prediction, not for describing the data
+We want the variance to be the same: homoscedasticity
+We want a sky-at-night distribution with no pattern
+
+### Normal Q-Q
+Not a big deal! Only important for prediction, not for describing the data
+Normality of the residuals. Want points on the dotted line
+
+### Cook's distance plot: Residuals vs Leverage
+Check they're not errors. Remove, test again
+If any point is more than a certain distance from the others, R will give it a number.
+
+```{r}
+anova(model1) #overall significance of main, t-way, 3-way etc. 
+```
+Check out later: Sequencial sums of squares
+
+```{r}
+summary(model1) #coeficient of variance etc. Use adjusted R-squared
+```
+
+## Add trendline - NOT geom_smooth if you have more than 2 variables (when you do Ancova)
+```{r}
+newX <- expand.grid(soil.moisture.content = seq(from = 0, to = 2.5, length = 10))
+newX
+```
+```{r}
+newY <- predict(model1, newdata = newX, interval = "confidence")
+newY
+```
+```{r}
+addThese <- data.frame(newX, newY)
+addThese
+```
+```{r}
+addThese <- addThese %>%
+  rename(plant.growth.rate = fit)
+```
+```{r}
+addThese
+```
+
+```{r, warning = FALSE}
+p3 <- ggplot(plant, aes(x = soil.moisture.content, y = plant.growth.rate))+
+  geom_point(colour = "cornflowerblue") +
+  ylim(15,50)+
+  geom_smooth(data = addThese, aes(ymin = lwr, ymax = upr), stat = "identity")
+p3
+```
 
 ```{r cars}
 summary(cars)
@@ -38,6 +158,6 @@ y <- rnorm(100, 3, 2)
 plot(x ~ y)
 ```
 
-#![some text](path to picture)
-#![Alt text](link to gif)
+
+#![Alt text](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWprdGE3dXY2amt0dWVxYTFmZDFzZWVpMm0wdTg4aWNoaGlvZWhiMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OMeBbkqCFQoFXCYYsp/giphy.gif)
 
